@@ -43,7 +43,7 @@ A React-based study timer application with additional learning features to help 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/Skull-boy/StudyBuddyy.git
+   git clone https://github.com/fun-geek/StudyBuddyy.git
    cd StudyBuddyy
    ```
 
