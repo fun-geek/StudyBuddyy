@@ -135,11 +135,96 @@ export default function StudyReminderApp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center text-indigo-900 mb-8">
-          📚 Programming Study Buddy
-        </h1>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 p-6 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Hexagon Grid */}
+        <div className="absolute inset-0" style={{ background: `
+          linear-gradient(120deg, rgba(99, 102, 241, 0.03) 0%, rgba(168, 85, 247, 0.03) 50%, rgba(236, 72, 153, 0.03) 100%),
+          repeating-linear-gradient(60deg, transparent, transparent 40px, rgba(99, 102, 241, 0.05) 40px, rgba(99, 102, 241, 0.05) 80px)
+        `}} />
+
+        {/* Study Icons */}
+        {[...Array(15)].map((_, i) => {
+          const icons = [
+            { Icon: BookOpen, color: 'rgba(99, 102, 241, 0.2)' },  // Books - Indigo
+            { Icon: Code, color: 'rgba(168, 85, 247, 0.2)' },      // Code - Purple
+            { Icon: PenTool, color: 'rgba(236, 72, 153, 0.2)' },   // Notes - Pink
+            { Icon: Database, color: 'rgba(99, 102, 241, 0.2)' },  // Learning - Indigo
+            { Icon: Star, color: 'rgba(168, 85, 247, 0.2)' }       // Achievement - Purple
+          ];
+          const { Icon, color } = icons[i % icons.length];
+          const size = 30 + Math.random() * 20;
+          const left = `${Math.random() * 100}%`;
+          const delay = i * -3;
+          const duration = 15 + Math.random() * 10;
+
+          return (
+            <div
+              key={i}
+              className="absolute transform hover:scale-150 transition-transform duration-300"
+              style={{
+                left,
+                top: `${Math.random() * 100}%`,
+                animation: `float ${duration}s infinite ease-in-out`,
+                animationDelay: `${delay}s`,
+                color: color,
+                filter: 'blur(0.5px)',
+                zIndex: 0
+              }}
+            >
+              <Icon size={size} />
+            </div>
+          );
+        })}
+
+        {/* Glowing Orbs */}
+        {[...Array(8)].map((_, i) => (
+          <div
+            key={`orb-${i}`}
+            className="absolute rounded-full blur-xl opacity-30"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: `${100 + Math.random() * 100}px`,
+              height: `${100 + Math.random() * 100}px`,
+              background: `radial-gradient(circle, ${
+                i % 2 === 0 ? 'rgba(99, 102, 241, 0.4)' : 'rgba(168, 85, 247, 0.4)'
+              } 0%, transparent 70%)`,
+              animation: `glow ${10 + Math.random() * 10}s infinite ease-in-out`,
+              animationDelay: `${i * -2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      <style jsx global>{`
+        @keyframes float {
+          0%, 100% { 
+            transform: translateY(0) rotate(0deg) scale(1); 
+          }
+          50% { 
+            transform: translateY(-30px) rotate(10deg) scale(1.1);
+          }
+        }
+        
+        @keyframes glow {
+          0%, 100% { 
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% { 
+            opacity: 0.5;
+            transform: scale(1.2);
+          }
+        }
+      `}</style>
+
+      <div className="max-w-4xl mx-auto relative">
+        <div className="flex items-center justify-between mb-8 bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-lg hover:bg-white/90 transition-all duration-300">
+          <h1 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:scale-105 transition-transform duration-300">
+            📚 Programming Study Buddy
+          </h1>
 
         {/* Timer Section */}
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
