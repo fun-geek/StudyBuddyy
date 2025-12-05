@@ -1,4 +1,4 @@
-# Study Buddy
+# Study Buddyy
 
 A React-based study timer application with additional learning features to help you stay focused and productive while studying.
 
