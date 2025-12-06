@@ -24,7 +24,7 @@ export default function Timer() {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-white/50 relative overflow-hidden"
+            className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-white/50 relative overflow-hidden h-full flex flex-col justify-between"
         >
             <div className="absolute top-0 left-0 w-full h-1 bg-gray-100">
                 <motion.div
@@ -42,8 +42,8 @@ export default function Timer() {
                             setCurrentTime(studyTime);
                         }}
                         className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-semibold transition-all ${isStudying
-                                ? 'bg-white text-indigo-600 shadow-md'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-white text-indigo-600 shadow-md'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <Brain className="w-4 h-4" />
@@ -56,8 +56,8 @@ export default function Timer() {
                             setCurrentTime(breakTime);
                         }}
                         className={`flex items-center gap-2 px-6 py-2 rounded-full text-sm font-semibold transition-all ${!isStudying
-                                ? 'bg-white text-green-600 shadow-md'
-                                : 'text-gray-500 hover:text-gray-700'
+                            ? 'bg-white text-green-600 shadow-md'
+                            : 'text-gray-500 hover:text-gray-700'
                             }`}
                     >
                         <Coffee className="w-4 h-4" />
@@ -81,8 +81,8 @@ export default function Timer() {
                         whileTap={{ scale: 0.95 }}
                         onClick={() => setIsRunning(!isRunning)}
                         className={`w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg transition-colors ${isStudying
-                                ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200'
-                                : 'bg-green-600 hover:bg-green-700 text-white shadow-green-200'
+                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-200'
+                            : 'bg-green-600 hover:bg-green-700 text-white shadow-green-200'
                             }`}
                     >
                         {isRunning ? (

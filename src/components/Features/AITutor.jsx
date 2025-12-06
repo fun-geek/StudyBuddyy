@@ -2,47 +2,32 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Sparkles, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useStudy } from '../../context/StudyContext';
+import { chatWithOllama } from '../../services/ollamaService';
 
-// Simple "AI" Knowledge Base
-const KNOWLEDGE_BASE = {
-    greetings: {
-        patterns: ['hello', 'hi', 'hey', 'morning', 'evening'],
-        responses: ["Hello! Ready to study?", "Hi there! How can I help you learn today?", "Greetings! Let's crush some code."]
-    },
-    motivation: {
-        patterns: ['tired', 'bored', 'hard', 'give up', 'motivate'],
-        responses: ["You got this! Every line of code makes you stronger.", "Take a deep breath. You're doing great.", "Remember why you started. Keep pushing!", "Coding is hard, but so are you."]
-    },
-    concepts: {
-        'variable': "A variable is like a container for storing data values. In JavaScript, we use let, const, or var.",
-        'loop': "Loops are used to repeat a block of code. Common types are for loops and while loops.",
-        'function': "A function is a block of code designed to perform a particular task. It is executed when 'invoked'.",
-        'array': "An array is a special variable, which can hold more than one value at a time.",
-        'object': "Objects are variables too. But objects can contain many values written as name:value pairs.",
-        'react': "React is a JavaScript library for building user interfaces, maintained by Meta.",
-        'hook': "Hooks are functions that let you 'hook into' React state and lifecycle features from function components.",
-        'motivation': "Make study a fun for you , Dont stressed out I am here to help you and make it more interactive & effective"
-    },
-    commands: {
-        'start': (actions) => { actions.startTimer(); return "Starting the timer. Focus mode on!"; },
-        'stop': (actions) => { actions.stopTimer(); return "Timer paused."; },
-        'break': (actions) => { actions.startBreak(); return "Taking a break. You earned it."; },
-        'quiz': (actions) => { return "You can start the quiz from the dashboard panel."; }
-    }
+// ... (imports remain)
+
+// Keep KNOWLEDGE_BASE for commands ONLY
+const COMMANDS = {
+    'start': (actions) => { actions.startTimer(); return "Starting the timer. Focus mode on!"; },
+    'stop': (actions) => { actions.stopTimer(); return "Timer paused."; },
+    'break': (actions) => { actions.startBreak(); return "Taking a break. You earned it."; },
+    'quiz': (actions) => { return "You can start the quiz from the dashboard panel."; }
 };
 
 export default function AITutor() {
+    // ... (state setup remains)
     const [isListening, setIsListening] = useState(false);
     const [transcript, setTranscript] = useState('');
     const [response, setResponse] = useState("Hi! I'm your AI Tutor. Click the mic to chat.");
     const [isSpeaking, setIsSpeaking] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false); // New state for loading
 
     const { setIsRunning, setIsStudying, setStudyTime, setBreakTime, setCurrentTime, studyTime, breakTime } = useStudy();
 
     const recognitionRef = useRef(null);
     const synthRef = useRef(window.speechSynthesis);
 
-    // Initialize Speech Recognition
+    // Initialize Speech Recognition (remains the same)
     useEffect(() => {
         if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -78,38 +63,16 @@ export default function AITutor() {
         synthRef.current.speak(utterance);
     };
 
-    const processInput = (text) => {
-        let reply = "I'm not sure about that yet. Try asking about variables, loops, or for motivation!";
+    const processInput = async (text) => {
 
-        // Check Greetings
-        if (KNOWLEDGE_BASE.greetings.patterns.some(p => text.includes(p))) {
-            const opts = KNOWLEDGE_BASE.greetings.responses;
-            reply = opts[Math.floor(Math.random() * opts.length)];
-        }
-
-        // Check Motivation
-        else if (KNOWLEDGE_BASE.motivation.patterns.some(p => text.includes(p))) {
-            const opts = KNOWLEDGE_BASE.motivation.responses;
-            reply = opts[Math.floor(Math.random() * opts.length)];
-        }
-
-        // Check Concepts
-        else {
-            for (const [key, value] of Object.entries(KNOWLEDGE_BASE.concepts)) {
-                if (text.includes(key)) {
-                    reply = value;
-                    break;
-                }
-            }
-        }
-
-        // Check Commands
+        // 1. Check for immediate Local Commands first
+        let commandReply = null;
         if (text.includes('start') || text.includes('begin')) {
-            reply = KNOWLEDGE_BASE.commands.start({ startTimer: () => setIsRunning(true) });
+            commandReply = COMMANDS.start({ startTimer: () => setIsRunning(true) });
         } else if (text.includes('stop') || text.includes('pause')) {
-            reply = KNOWLEDGE_BASE.commands.stop({ stopTimer: () => setIsRunning(false) });
+            commandReply = COMMANDS.stop({ stopTimer: () => setIsRunning(false) });
         } else if (text.includes('break')) {
-            reply = KNOWLEDGE_BASE.commands.break({
+            commandReply = COMMANDS.break({
                 startBreak: () => {
                     setIsStudying(false);
                     setCurrentTime(breakTime);
@@ -118,8 +81,28 @@ export default function AITutor() {
             });
         }
 
-        setResponse(reply);
-        speak(reply);
+        if (commandReply) {
+            setResponse(commandReply);
+            speak(commandReply);
+            return;
+        }
+
+        // 2. If no command, ask Ollama
+        setIsProcessing(true);
+        setResponse("Thinking...");
+
+        try {
+            const aiReply = await chatWithOllama(text);
+            setResponse(aiReply);
+            speak(aiReply);
+        } catch (error) {
+            console.error(error);
+            const errorMsg = "I'm having trouble connecting to my brain (Ollama). Is it running locally?";
+            setResponse(errorMsg);
+            speak(errorMsg);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     const toggleListening = () => {

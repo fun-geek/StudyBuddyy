@@ -5,6 +5,21 @@ import { useStudy } from '../../context/StudyContext';
 export default function AmbientPlayer() {
     const { isAmbientPlaying, setIsAmbientPlaying, volume, setVolume } = useStudy();
     const audioRef = useRef(null);
+    const [currentTrack, setCurrentTrack] = React.useState('/sounds/rain.mp3');
+
+    const TRACKS = [
+        { name: 'Rain', path: '/sounds/rain.mp3' },
+        { name: 'Ambient', path: '/sounds/ambient.mp3' }
+    ];
+
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.src = currentTrack;
+            if (isAmbientPlaying) {
+                audioRef.current.play().catch(e => console.log("Audio play failed:", e));
+            }
+        }
+    }, [currentTrack]);
 
     useEffect(() => {
         if (audioRef.current) {
@@ -23,7 +38,7 @@ export default function AmbientPlayer() {
     }, [volume]);
 
     return (
-        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/50">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-6 shadow-xl border border-white/50 h-full flex flex-col justify-center">
             <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-800 flex items-center gap-2">
                     <CloudRain className="w-5 h-5 text-blue-500" />
@@ -36,6 +51,22 @@ export default function AmbientPlayer() {
                 >
                     {isAmbientPlaying ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
                 </button>
+            </div>
+
+            {/* Track Selector */}
+            <div className="flex gap-2 mb-4 bg-gray-100/50 p-1 rounded-xl">
+                {TRACKS.map(track => (
+                    <button
+                        key={track.path}
+                        onClick={() => setCurrentTrack(track.path)}
+                        className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${currentTrack === track.path
+                            ? 'bg-white text-blue-600 shadow-sm'
+                            : 'text-gray-500 hover:text-gray-700'
+                            }`}
+                    >
+                        {track.name}
+                    </button>
+                ))}
             </div>
 
             <div className="flex items-center gap-3">
@@ -52,7 +83,7 @@ export default function AmbientPlayer() {
                 <Volume2 className="w-4 h-4 text-gray-400" />
             </div>
 
-            <audio ref={audioRef} src="/sounds/rain.mp3" loop />
+            <audio ref={audioRef} loop />
         </div>
     );
 }
