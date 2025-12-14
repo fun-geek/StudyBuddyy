@@ -175,12 +175,32 @@ export default function Quiz() {
     if (gameMode === 'loading') {
         return (
             <div className="bg-white/70 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-white/50 h-full flex flex-col items-center justify-center text-center">
-                <div className="relative mb-8">
-                    <div className="w-20 h-20 border-4 border-indigo-100 rounded-full animate-pulse"></div>
-                    <Loader2 className="w-10 h-10 text-indigo-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin" />
+                <div className="relative mb-8 w-24 h-24">
+                    {/* Outer Ring */}
+                    <motion.div
+                        className="absolute inset-0 border-4 border-indigo-100 border-t-indigo-600 rounded-full"
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+                    />
+                    {/* Inner Ring */}
+                    <motion.div
+                        className="absolute inset-2 border-4 border-purple-100 border-b-purple-500 rounded-full"
+                        animate={{ rotate: -360 }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    />
+                    {/* Center Icon */}
+                    <motion.div
+                        className="absolute inset-0 flex items-center justify-center"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                    >
+                        <Sparkles className="w-8 h-8 text-indigo-500" />
+                    </motion.div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">Generating Questions...</h3>
-                <p className="text-gray-500">Consulting the AI knowledge base about "{topic}"</p>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Generating Quiz...</h3>
+                <p className="text-gray-500 max-w-[80%] mx-auto">
+                    Consulting the AI knowledge base about <span className="text-indigo-600 font-medium">"{topic}"</span>
+                </p>
             </div>
         );
     }
